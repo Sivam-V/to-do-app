@@ -1,0 +1,30 @@
+# 1. Create the frontend folder
+npm create vite@latest frontend
+
+# 2. Choose: React (JavaScript) when prompted
+
+# 3. Move into frontend folder
+cd frontend
+
+# 4. Install dependencies
+npm install
+
+# 5. Start development server
+npm run dev
+--------------------------------------------------------------------------------
+
+# 1. Go to the main project folder
+cd ..
+
+# 2. Create backend folder
+mkdir backend
+cd backend
+
+# 3. Initialize npm (package.json)
+npm init -y
+
+# 4. Install Express & CORS
+npm install express cors
+
+# 5. Install nodemon (for auto-restart during development)
+npm install --save-dev nodemon
