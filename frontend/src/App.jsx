@@ -73,7 +73,7 @@ function App() {
             </form>
 
             <ul>
-                {todos && todos.map((todo, index) => (
+                {todos.map((todo, index) => (
 
                     <li key={todo._id}> 
         
