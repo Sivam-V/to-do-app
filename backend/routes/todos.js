@@ -53,10 +53,22 @@ router.delete('/:id', async(req, res) => {
     }catch (error){
         console.log('Error while delete todo...')
         res.status(500).json({message : "Filed to delete the todo"})
-    }
-        
+    } 
 })
 
+router.put('/:id', async(req, res) => {
+    try {
+        const updatedTodo = req.body.text
+        const editId = req.params.id
+        const  itemAfterUpdate = await Todo.findByIdAndUpdate(editId, {text : req.body.text})
+        console.log('Item updated successfully...🔥')
+        const  todoAfterUpdate = await Todo.find()
+        return res.status(200).json(todoAfterUpdate)
+    }catch(err) {
+        console.log('Error while update the todo')
+        res.status(500).json({message : 'failed to update the item'})
+    }
+})
 module.exports = router;
 
 /*You're exporting an object that has HTTP methods (get, post, etc.) registered on it.
