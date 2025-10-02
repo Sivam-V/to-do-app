@@ -7,68 +7,87 @@ const app = express()
 const Todo = require('../models/todo.js')
 const router = express.Router()
 
-router.get('/', async(req, res) => {
-    // const ToDoItemsArray = await Todo.find()
-    // res.json(ToDoItemsArray);
+// ADD THIS ROUTE: GET all todos
+router.get('/', async (req, res) => {
     try {
-        const ToDoItemsArray = await Todo.find();
-        res.json(ToDoItemsArray);
+        const todos = await Todo.find().sort({ createdAt: -1 }); // Sort by newest first
+        res.status(200).json(todos);
     } catch (err) {
-        console.error("Error fetching todos:", err);
-        res.status(500).json({ message: "Failed to retrieve todos from the database." });
+        console.error('Error while fetching todos:', err);
+        res.status(500).json({ message: 'Failed to fetch todos.' });
     }
-})
+});
 
-router.post('/', async(req, res) => {
+// ✅ ADD THIS ROUTE: POST a new todo
+router.post('/', async (req, res) => {
     try {
-        // save in the Todo collection
-        const itemName = req.body.text;
-
-        // Basic validation to ensure text is not empty
-        if (!itemName) return res.status(400).json({ message: "Todo text cannot be empty." });
-
-        console.log("Creating new todo with text:", itemName);
-        const newTodoItem = new Todo({ text: itemName });
-        const savedItem = await newTodoItem.save();
-        
-        // send to frontend
-        res.status(201).json(savedItem); // 201 Created is more appropriate for a successful POST
-    } catch (err) {
-        console.error("Error saving new todo:", err);
-        res.status(500).json({ message: "Failed to save the new todo." });
-    }
-})
-
-router.delete('/:id', async(req, res) => {
-    const todoId = req.params.id;
-    console.log(todoId)
-    try {
-        const deletedTodo = await Todo.findByIdAndDelete(todoId)
-        if (!deletedTodo) {
-            return res.status(404).json({message : 'item not found on DB'})
+        if (!req.body.text) {
+            return res.status(400).json({ message: 'Todo text cannot be empty' });
         }
-        const todoAfterDelete = await Todo.find()
-        console.log('Item deleted successfully...')
-        return res.status(200).json(todoAfterDelete)
-    }catch (error){
-        console.log('Error while delete todo...')
-        res.status(500).json({message : "Filed to delete the todo"})
-    } 
-})
-
-router.put('/:id', async(req, res) => {
-    try {
-        const updatedTodo = req.body.text
-        const editId = req.params.id
-        const  itemAfterUpdate = await Todo.findByIdAndUpdate(editId, {text : req.body.text})
-        console.log('Item updated successfully...🔥')
-        const  todoAfterUpdate = await Todo.find()
-        return res.status(200).json(todoAfterUpdate)
-    }catch(err) {
-        console.log('Error while update the todo')
-        res.status(500).json({message : 'failed to update the item'})
+        const newTodo = new Todo({
+            text: req.body.text
+        });
+        const savedTodo = await newTodo.save();
+        res.status(201).json(savedTodo); // Return only the newly created todo
+    } catch (err) {
+        console.error('Error while creating todo:', err);
+        res.status(500).json({ message: 'Failed to create todo.' });
     }
-})
+});
+
+// PATCH a todo to mark as complete/incomplete
+router.patch('/:id/complete', async (req, res) => {
+    try {
+        const todoId = req.params.id;
+        const { completed } = req.body;
+
+        if (typeof completed !== 'boolean') {
+            return res.status(400).json({ message: 'completed must be a boolean' });
+        }
+
+        const updated = await Todo.findByIdAndUpdate(todoId, { completed }, { new: true });
+        if (!updated) return res.status(404).json({ message: 'Item not found on DB' });
+
+        // return fresh list (keeps frontend simple)
+        const todos = await Todo.find().sort({ createdAt: -1 });
+        res.status(200).json(todos);
+    } catch (err) {
+        console.error('Error while updating completion:', err);
+        res.status(500).json({ message: 'Failed to update completion.' });
+    }
+});
+
+
+// DELETE a todo
+router.delete('/:id', async (req, res) => {
+    try {
+        const deletedTodo = await Todo.findByIdAndDelete(req.params.id);
+        if (!deletedTodo) return res.status(404).json({ message: 'item not found on DB' });
+        const todoAfterDelete = await Todo.find().sort({ createdAt: -1 });
+        return res.status(200).json(todoAfterDelete);
+    } catch (error) {
+        console.error('Error while deleting todo...', error);
+        res.status(500).json({ message: 'Failed to delete the todo' });
+    }
+});
+
+// PUT (update) a todo's text
+router.put('/:id', async (req, res) => {
+    try {
+        const editId = req.params.id;
+        const update = {};
+        if (req.body.text !== undefined) update.text = req.body.text;
+        
+        await Todo.findByIdAndUpdate(editId, update);
+        const todos = await Todo.find().sort({ createdAt: -1 });
+        return res.status(200).json(todos);
+    } catch (err) {
+        console.error('Error while updating the todo', err);
+        res.status(500).json({ message: 'failed to update the item' });
+    }
+});
+
+
 module.exports = router;
 
 /*You're exporting an object that has HTTP methods (get, post, etc.) registered on it.

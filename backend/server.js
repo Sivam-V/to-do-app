@@ -5,7 +5,7 @@ const app = express()
 
 // set the middleware
 app.use(cors())
-app.use(express.json()) // 
+app.use(express.json())
 
 // connect the backend to the databade
 const URI = 'mongodb://localhost:27017/simple-todo-app'
