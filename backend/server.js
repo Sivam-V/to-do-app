@@ -1,11 +1,12 @@
 const express = require('express')
-const cors = require('cors')
+const cors = require('cors')  // ✨ 1. Import the cors package
 const mongoose = require('mongoose')
 const app = express()
 
 // set the middleware
 app.use(cors())
 app.use(express.json())
+
 
 // connect the backend to the databade
 const URI = 'mongodb://localhost:27017/simple-todo-app'
