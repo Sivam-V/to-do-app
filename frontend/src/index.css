@@ -1,4 +1,4 @@
-:root {
+/* :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
@@ -65,4 +65,278 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+} */
+
+
+/* === Global Styles & Layout === */
+:root {
+    --color-bg-darkest: #121212;
+    --color-bg-dark: #1e1e1e;
+    --color-bg-medium: #2b2b2b;
+    --color-border: #444;
+    --color-text-light: #f0f0f0;
+    --color-text-medium: #aaa;
+    --color-text-dark: #888;
+    --color-primary: #646cff;
+    --color-primary-hover: #535bf2;
+    --color-danger: #e53e3e;
+    --color-danger-hover: #c53030;
+    --color-secondary: #4a4a4a;
+    --color-secondary-hover: #5a5a5a;
+    --priority-high: #e53e3e;
+    --priority-medium: #f6e05e;
+    --priority-low: #48bb78;
+    --color-overdue: #ff6b6b;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+        Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue',
+        sans-serif;
+    background-color: var(--color-bg-darkest);
+    color: var(--color-text-light);
+    margin: 0;
+    padding: 2rem;
+}
+
+/* === Main App Container === */
+.planner-container {
+    max-width: 900px;
+    margin: 0 auto;
+    background-color: var(--color-bg-dark);
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+h1 {
+    text-align: center;
+    color: #ffffff;
+    margin-top: 0;
+    margin-bottom: 2rem;
+}
+
+h3 {
+    color: #ffffff;
+    border-bottom: 2px solid var(--color-primary);
+    padding-bottom: 8px;
+    margin-top: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid var(--color-border);
+    margin: 2rem 0;
+}
+
+/* === Forms (Add & Find) === */
+.add-task-form,
+.find-tasks-form {
+    display: flex;
+    flex-wrap: wrap; /* Allows items to wrap on smaller screens */
+    gap: 12px; /* Space between form elements */
+    align-items: flex-end; /* Aligns buttons with taller inputs */
+}
+
+/* Common style for inputs and selects */
+input[type='text'],
+input[type='date'],
+select {
+    font-size: 16px;
+    padding: 12px 15px;
+    background-color: var(--color-bg-medium);
+    color: var(--color-text-light);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    box-sizing: border-box; /* Important for padding */
+    min-width: 150px; /* Stop them from getting too small */
+}
+
+input[type='text']:focus,
+input[type='date']:focus,
+select:focus {
+    outline: none;
+    border-color: var(--color-primary); /* Highlight on focus */
+    box-shadow: 0 0 0 3px rgba(100, 108, 255, 0.3);
+}
+
+/* Make text inputs and selects grow to fill space */
+.add-task-form input[type='text'],
+.find-tasks-form input[type='text'] {
+    flex-grow: 1;
+    min-width: 200px;
+}
+
+/* === Buttons === */
+button {
+    font-size: 16px;
+    font-weight: 600;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+button:active {
+    transform: scale(0.98); /* Nice press effect */
+}
+
+/* Primary "Add Task" button */
+.btn-primary {
+    background-color: var(--color-primary);
+    color: white;
+}
+.btn-primary:hover {
+    background-color: var(--color-primary-hover);
+}
+
+/* Secondary "Edit" / "Cancel" button */
+.btn-secondary {
+    background-color: var(--color-secondary);
+    color: white;
+}
+.btn-secondary:hover {
+    background-color: var(--color-secondary-hover);
+}
+
+/* Danger "Delete" button */
+.btn-danger {
+    background-color: var(--color-danger);
+    color: white;
+}
+.btn-danger:hover {
+    background-color: var(--color-danger-hover);
+}
+
+/* === Task List === */
+.task-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 2rem;
+}
+
+.task-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background-color: var(--color-bg-medium);
+    padding: 1rem 1.5rem;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+    border-left: 5px solid transparent; /* For priority */
+}
+
+.task-item:hover {
+    background-color: #333;
+}
+
+/* Priority Styling */
+.task-item.priority-high {
+    border-left-color: var(--priority-high);
+}
+.task-item.priority-medium {
+    border-left-color: var(--priority-medium);
+}
+.task-item.priority-low {
+    border-left-color: var(--priority-low);
+}
+
+.task-item input[type='checkbox'] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    flex-shrink: 0; /* Stop it from shrinking */
+}
+
+.task-details {
+    flex-grow: 1; /* This is key: it pushes the buttons to the right */
+    font-size: 1.1rem;
+}
+
+/* When checkbox is checked, style the task details */
+.task-item input[type='checkbox']:checked + .task-details {
+    text-decoration: line-through;
+    color: var(--color-text-dark);
+    opacity: 0.8;
+}
+
+.task-details .due-date {
+    font-size: 0.9rem;
+    color: var(--color-text-medium);
+    margin-left: 10px;
+}
+
+/* ✨ NEW: Style for overdue tasks from your logic */
+.task-item.overdue .task-details {
+    color: var(--color-overdue);
+    font-weight: 600;
+}
+/* Ensure completed overdue tasks are styled as completed */
+.task-item.overdue input[type='checkbox']:checked + .task-details {
+    color: var(--color-text-dark);
+    font-weight: normal;
+}
+
+.task-actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* Make list buttons a bit smaller */
+.task-actions button {
+    padding: 8px 14px;
+    font-size: 14px;
+}
+
+/* === Edit-in-place styles === */
+.task-item-edit-form {
+    display: flex;
+    flex-grow: 1;
+    align-items: center;
+    gap: 10px;
+}
+.task-item-edit-form input[type='text'] {
+    flex-grow: 1;
+    margin: -8px 0; /* Tighten up spacing */
+}
+.task-item-edit-form select,
+.task-item-edit-form input[type='date'] {
+    margin: -8px 0;
+}
+.task-item-edit-form button {
+     padding: 8px 14px;
+     font-size: 14px;
+}
+
+
+/* === Pagination === */
+.pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-border);
+}
+
+.pagination span {
+    font-size: 1rem;
+    color: var(--color-text-medium);
+}
+
+.pagination button {
+    background-color: var(--color-secondary);
+    color: white;
+}
+.pagination button:hover {
+    background-color: var(--color-secondary-hover);
+}
+.pagination button:disabled {
+    background-color: var(--color-bg-medium);
+    color: #666;
+    cursor: not-allowed;
+    opacity: 0.7;
 }

@@ -1,5 +1,7 @@
-// import React, { useState, useEffect } from 'react';
-import React, { useState, useEffect, useCallback } from 'react'; // ✨ FIX: Add useCallback here
+/*This is acts as a front end of the todo app and each and every
+function is writtern by me interms of understand the frontend, backend, and database configuration
+to increat the knowledge on the developement journey*/
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 
 // The API base URL
@@ -24,13 +26,12 @@ function App() {
     const [searchTerm, setSearchTerm] = useState('');
     const [priorityFilter, setPriorityFilter] = useState('');
 
-    // ✨ NEW: Central function to fetch todos based on current state (page, search, filter)
+    // Central function to fetch todos
     const fetchTodos = useCallback(async () => {
         try {
-            // Construct query parameters
             const params = new URLSearchParams({
                 page,
-                limit: 10, // You can make this dynamic if you want
+                limit: 10,
             });
             if (searchTerm) params.append('search', searchTerm);
             if (priorityFilter) params.append('priority', priorityFilter);
@@ -41,7 +42,7 @@ function App() {
         } catch (err) {
             console.error('Error while fetching todos:', err);
         }
-    }, [page, searchTerm, priorityFilter]); // Re-run this function if these dependencies change
+    }, [page, searchTerm, priorityFilter]);
 
     // Fetch todos on initial component mount and when dependencies change
     useEffect(() => {
@@ -58,16 +59,15 @@ function App() {
         const newTodo = {
             text: newTodoText,
             priority: newTodoPriority,
-            dueDate: newTodoDueDate || null, // Send null if date is empty
+            dueDate: newTodoDueDate || null,
         };
 
         axios.post(API_URL, newTodo)
             .then(() => {
-                // Reset form and refetch todos to see the new one
                 setNewTodoText('');
                 setNewTodoPriority('Medium');
                 setNewTodoDueDate('');
-                setPage(1); // Go back to the first page to see the newest item
+                setPage(1); 
                 fetchTodos();
             })
             .catch(err => console.error('Error while creating the task:', err));
@@ -79,11 +79,9 @@ function App() {
         axios.put(`${API_URL}/${editId}`, {
                 text: editData.text,
                 priority: editData.priority,
-                // Format date correctly before sending
                 dueDate: editData.dueDate ? new Date(editData.dueDate).toISOString() : null
             })
             .then(response => {
-                // Update the single todo in the list
                 setTodos(prev => prev.map(t => t._id === editId ? response.data : t));
                 setEditId(null);
             })
@@ -96,7 +94,6 @@ function App() {
     function handleDeleteTodo(id) {
         axios.delete(`${API_URL}/${id}`)
             .then(() => {
-                // After deleting, refetch the current page
                 fetchTodos();
             })
             .catch(err => console.error('failed to delete the todo', err));
@@ -107,7 +104,6 @@ function App() {
         setEditData({
             text: todo.text,
             priority: todo.priority,
-            // Format date for the date input field, which expects 'YYYY-MM-DD'
             dueDate: todo.dueDate ? new Date(todo.dueDate).toISOString().split('T')[0] : ''
         });
     }
@@ -115,7 +111,6 @@ function App() {
     function handleToggleComplete(id, newCompleted) {
         axios.patch(`${API_URL}/${id}/complete`, { completed: newCompleted })
             .then(response => {
-                // Update the single todo in the list
                 setTodos(prev => prev.map(t => (t._id === id ? response.data : t)));
             })
             .catch(err => console.error('Failed to toggle completed', err));
@@ -128,17 +123,18 @@ function App() {
     }
 
     return (
-        <div>
+        // Added main container class
+        <div className="planner-container">
             <h1>My Planner...</h1>
 
-            {/* ✨ NEW: Form for adding a new todo */}
-            <form onSubmit={handleAddTodo}>
-                <h3>Add New Task</h3>
+            {/*Form for adding a new todo */}
+            <form onSubmit={handleAddTodo} className="add-task-form">
+                {/* No h3 needed, placeholder is enough */}
                 <input
                     type="text"
                     value={newTodoText}
                     onChange={(e) => setNewTodoText(e.target.value)}
-                    placeholder="Enter a todo"
+                    placeholder="Enter a new todo..."
                 />
                 <select value={newTodoPriority} onChange={(e) => setNewTodoPriority(e.target.value)}>
                     <option value="Low">Low</option>
@@ -150,38 +146,47 @@ function App() {
                     value={newTodoDueDate}
                     onChange={(e) => setNewTodoDueDate(e.target.value)}
                 />
-                <button type="submit">Add Task</button>
+                {/*  Added button class */}
+                <button type="submit" className="btn-primary">Add Task</button>
             </form>
 
             <hr />
             
-            {/* ✨ NEW: Search and Filter controls */}
+            {/*  Search and Filter controls */}
             <div>
                 <h3>Find Tasks</h3>
-                <input
-                    type="text"
-                    placeholder="Search by text..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                />
-                <select value={priorityFilter} onChange={(e) => setPriorityFilter(e.target.value)}>
-                    <option value="">All Priorities</option>
-                    <option value="Low">Low</option>
-                    <option value="Medium">Medium</option>
-                    <option value="High">High</option>
-                </select>
+                {/*  Added wrapper div with class for flex layout */}
+                <div className="find-tasks-form">
+                    <input
+                        type="text"
+                        placeholder="Search by text..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                    <select value={priorityFilter} onChange={(e) => setPriorityFilter(e.target.value)}>
+                        <option value="">All Priorities</option>
+                        <option value="Low">Low</option>
+                        <option value="Medium">Medium</option>
+                        <option value="High">High</option>
+                    </select>
+                </div>
             </div>
             
             <hr />
 
-            {/* Todo List */}
-            <ol>
+            {/* ✨ Todo List */}
+            <ol className="task-list">
                 {todos.map((todo) => (
-                    <li key={todo._id} style={{
-                        // ✨ NEW: Highlight overdue tasks in red
-                        color: todo.isOverdue ? 'red' : 'black',
-                        textDecoration: todo.completed ? 'line-through' : 'none'
-                    }}>
+                    <li 
+                        key={todo._id} 
+                        // ✨ REMOVED inline style
+                        // ✨ ADDED dynamic classes for priority and overdue status
+                        className={`
+                            task-item 
+                            priority-${todo.priority.toLowerCase()}
+                            ${todo.isOverdue ? 'overdue' : ''}
+                        `}
+                    >
                         <input
                             type="checkbox"
                             checked={!!todo.completed}
@@ -190,18 +195,26 @@ function App() {
 
                         {editId !== todo._id ? (
                             <>
-                                <span>
-                                    <strong>{todo.text}</strong>
-                                    {/* ✨ NEW: Display Priority and Due Date */}
-                                    <em> (Priority: {todo.priority})</em>
-                                    {todo.dueDate && <em> - Due: {formatDate(todo.dueDate)}</em>}
-                                </span>
-                                <button onClick={() => handleDeleteTodo(todo._id)}>Delete</button>
-                                <button onClick={() => handleEditTodo(todo)}>Edit</button>
+                                {/* ✨ Added .task-details wrapper for layout */}
+                                <div className="task-details">
+                                    <span>
+                                        <strong>{todo.text}</strong>
+                                        <em> (Priority: {todo.priority})</em>
+                                    </span>
+                                    {/* ✨ Added .due-date class for styling */}
+                                    {todo.dueDate && <span className="due-date">Due: {formatDate(todo.dueDate)}</span>}
+                                </div>
+                                
+                                {/* ✨ Added .task-actions wrapper for buttons */}
+                                <div className="task-actions">
+                                    <button onClick={() => handleDeleteTodo(todo._id)} className="btn-danger">Delete</button>
+                                    <button onClick={() => handleEditTodo(todo)} className="btn-secondary">Edit</button>
+                                </div>
                             </>
                         ) : (
-                            <>
-                                {/* ✨ NEW: Expanded Edit Form */}
+                            // ✨ This is the edit-in-place form
+                            // ✨ We wrap it in a div to apply flex layout
+                            <div className="task-item-edit-form">
                                 <input
                                     type="text"
                                     value={editData.text}
@@ -217,16 +230,16 @@ function App() {
                                     value={editData.dueDate}
                                     onChange={(e) => setEditData({ ...editData, dueDate: e.target.value })}
                                 />
-                                <button onClick={handleUpdateTodo}>Update</button>
-                                <button onClick={() => setEditId(null)}>Cancel</button>
-                            </>
+                                <button onClick={handleUpdateTodo} className="btn-primary">Update</button>
+                                <button onClick={() => setEditId(null)} className="btn-secondary">Cancel</button>
+                            </div>
                         )}
                     </li>
                 ))}
             </ol>
 
-            {/* ✨ NEW: Pagination Controls */}
-            <div>
+            {/* Pagination Controls */}
+            <div className="pagination">
                 <button onClick={() => setPage(p => p - 1)} disabled={page <= 1}>
                     Previous
                 </button>
