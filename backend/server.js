@@ -1,3 +1,6 @@
+/*backend documentation - this file used to navigate the incomming request to their 
+currosponing router handler*/
+
 const express = require('express')
 const cors = require('cors')  // ✨ 1. Import the cors package
 const mongoose = require('mongoose')
@@ -11,8 +14,8 @@ app.use(express.json())
 // connect the backend to the databade
 const URI = 'mongodb://localhost:27017/simple-todo-app'
 mongoose.connect(URI)
-    .then(() => console.log('✅Database is connect to the server'))
-    .catch((err) => console.log('❌Error occurs while connect to Database'))
+    .then(() => console.log('Database is connect to the server'))
+    .catch((err) => console.log('Error occurs while connect to Database'))
 
 // activate the route if get request form the api/todos
 const todoRouts = require('./routes/todos.js')
