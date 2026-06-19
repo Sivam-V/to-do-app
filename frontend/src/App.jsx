@@ -90,7 +90,8 @@ function App() {
 
 
     // === TODO ITEM ACTIONS ===
-
+    // This function uses the particularly for delete TO DO using the id (this is how logic works in the MongoDB)
+    // axios is the function is used from front end to send request to the backend
     function handleDeleteTodo(id) {
         axios.delete(`${API_URL}/${id}`)
             .then(() => {

@@ -11,12 +11,12 @@ const TodoSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    // ✨ NEW: Add a due date for the task
+    // NEW: Add a due date for the task
     dueDate: {
         type: Date,
         default: null // Or you can set a default if you like
     },
-    // ✨ NEW: Add priority levels
+    // NEW: Add priority levels
     priority: {
         type: String,
         enum: ['Low', 'Medium', 'High'], // Only allow these three values
@@ -28,7 +28,7 @@ const TodoSchema = new mongoose.Schema({
 // const Todo = mongoose.model('Todo', TodoSchema);
 // module.exports = Todo;
 
-// ✨ FIX: Add this virtual property to calculate if a task is overdue
+//  FIX: Add this virtual property to calculate if a task is overdue
 TodoSchema.virtual('isOverdue').get(function() {
     // A task is overdue if it has a due date, that date is in the past, AND it is not completed.
     return this.dueDate && this.dueDate < new Date() && !this.completed;
